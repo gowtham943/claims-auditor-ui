@@ -1,0 +1,18 @@
+---
+alwaysApply: true
+{
+  "project_type": "React TypeScript Enterprise Audit Dashboard",
+  "tech_stack": {
+    "framework": "React (Functional Components, Hooks)",
+    "language": "TypeScript (Strict Mode, explicit interface typings)",
+    "styling": "Tailwind CSS with Tailwind Merge & Cls_x",
+    "ui_components": "Lucide React (Icons), Radix UI or shadcn primitives",
+  },
+  "code_generation_rules": {
+     "authentication": "Store the JWT token securely in localStorage or a global AuthContext. Automatically inject `Authorization: Bearer <token>` into all REST headers.",
+    "websockets": "Always append the raw token string as a query parameter (`?token=YOUR_JWT`) when opening the WebSocket handshake connection window.",
+    "state_management": "Use an explicit global state boundary for the 'activeSelectedPolicyId' so the Chatbot View knows exactly which policy rulebook context to query against dynamically.",
+    "visual_fidelity": "Enterprise Dark/Light hybrid aesthetic. Use clean bounding cards, modern neon metric status rings, and fluid motion for step transitions."
+  }
+}
+---
