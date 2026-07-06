@@ -179,4 +179,4 @@ docker compose logs -f ui
 
 ## Architecture
 
-Backend design and component details: [claims-auditor-api/doc/architecture.md](../claims-auditor-api/doc/architecture.md)
+Backend design and component details: [https://github.com/gowtham943/claims-auditor-api/doc/architecture.md](../claims-auditor-api/doc/architecture.md)
