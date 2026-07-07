@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { apiFetch } from '../lib/api'
 import { API_ENDPOINTS } from '../config/endpoints'
+import { formatAuditStatus } from '../config/userLabels'
 import type { AuditReport, ClaimAuditDetail, ClaimAuditSummary } from '../types/api'
 import { cn } from '../lib/cn'
 
@@ -15,13 +16,13 @@ function StatusBadge({ status }: { status: AuditReport['audit_status'] }) {
   return (
     <span
       className={cn(
-        'inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide',
-        status === 'APPROVED' && 'bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-500/40',
-        status === 'FLAGGED_ANOMALY' && 'bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/40 pulse-amber',
-        status === 'DENIED' && 'bg-red-500/20 text-red-300 ring-1 ring-red-500/40',
+        'inline-flex rounded-full px-3 py-1 text-xs font-semibold tracking-wide',
+        status === 'VALID' && 'bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-500/40',
+        status === 'NEEDS_REVIEW' && 'bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/40 pulse-amber',
+        status === 'INVALID' && 'bg-red-500/20 text-red-300 ring-1 ring-red-500/40',
       )}
     >
-      {status}
+      {formatAuditStatus(status)}
     </span>
   )
 }
@@ -138,8 +139,8 @@ export function AuditingConsole({ liveReport, liveClaimId }: AuditingConsoleProp
     <div className="grid h-[calc(100vh-14rem)] min-h-[32rem] grid-cols-1 gap-4 lg:grid-cols-[18rem_1fr]">
       <aside className="glass-panel flex flex-col overflow-hidden rounded-xl">
         <header className="border-b border-slate-700/80 px-4 py-3">
-          <h3 className="text-sm font-medium text-slate-200">Audit History</h3>
-          <p className="mt-1 text-xs text-slate-500">Completed claim reviews for your account</p>
+          <h3 className="text-sm font-medium text-slate-200">Past claim checks</h3>
+          <p className="mt-1 text-xs text-slate-500">Claims you have already checked</p>
         </header>
 
         <div className="flex-1 overflow-y-auto p-2">
@@ -148,7 +149,7 @@ export function AuditingConsole({ liveReport, liveClaimId }: AuditingConsoleProp
               <Loader2 className="h-5 w-5 animate-spin" />
             </div>
           ) : history.length === 0 ? (
-            <p className="px-2 py-4 text-sm text-slate-500">No completed audits yet.</p>
+            <p className="px-2 py-4 text-sm text-slate-500">No claim checks yet.</p>
           ) : (
             <div className="space-y-2">
               {history.map((item) => {
@@ -191,7 +192,7 @@ export function AuditingConsole({ liveReport, liveClaimId }: AuditingConsoleProp
           </div>
         ) : !report ? (
           <div className="glass-panel flex flex-1 items-center justify-center rounded-xl p-8 text-slate-400">
-            Select an audit from history or complete a new claim audit.
+            Select a past claim check or finish checking a new claim.
           </div>
         ) : (
           <>
@@ -208,18 +209,18 @@ export function AuditingConsole({ liveReport, liveClaimId }: AuditingConsoleProp
             <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 lg:grid-cols-2">
               <section className="glass-panel flex min-h-0 flex-col overflow-hidden rounded-xl">
                 <header className="border-b border-slate-700/80 px-4 py-3">
-                  <h3 className="text-sm font-medium text-slate-200">Claim Source Markdown</h3>
+                  <h3 className="text-sm font-medium text-slate-200">Your claim document</h3>
                 </header>
                 <div className="flex-1 overflow-y-auto p-4">
                   <pre className="whitespace-pre-wrap break-words font-mono text-xs leading-relaxed text-slate-300">
-                    {report.raw_claim_markdown || 'Raw claim markdown unavailable for this audit.'}
+                    {report.raw_claim_markdown || 'The original claim text is not available.'}
                   </pre>
                 </div>
               </section>
 
               <section className="glass-panel flex min-h-0 flex-col overflow-hidden rounded-xl">
                 <header className="flex items-center justify-between border-b border-slate-700/80 px-4 py-3">
-                  <h3 className="text-sm font-medium text-slate-200">Audit Intelligence Panel</h3>
+                  <h3 className="text-sm font-medium text-slate-200">Check result</h3>
                   <StatusBadge status={report.audit_status} />
                 </header>
 
@@ -240,9 +241,9 @@ export function AuditingConsole({ liveReport, liveClaimId }: AuditingConsoleProp
                   </div>
 
                   <div>
-                    <h4 className="mb-2 text-xs uppercase tracking-wide text-slate-500">Violations</h4>
+                    <h4 className="mb-2 text-xs uppercase tracking-wide text-slate-500">Problems found</h4>
                     {report.violations.length === 0 ? (
-                      <p className="text-sm text-emerald-300">No compliance violations detected.</p>
+                      <p className="text-sm text-emerald-300">No problems found. This claim looks valid.</p>
                     ) : (
                       <div className="space-y-2">
                         {report.violations.map((violation, index) => {
@@ -278,7 +279,7 @@ export function AuditingConsole({ liveReport, liveClaimId }: AuditingConsoleProp
                                 <div className="space-y-2 border-t border-slate-700 px-3 py-3 text-sm">
                                   <p className="text-slate-300">{violation.description}</p>
                                   <div className="rounded-md border border-slate-600 bg-slate-950/70 p-2">
-                                    <p className="mb-1 text-xs uppercase text-slate-500">Policy Citation</p>
+                                    <p className="mb-1 text-xs uppercase text-slate-500">Policy reference</p>
                                     <p className="whitespace-pre-wrap text-xs text-slate-300">
                                       {violation.policy_citation}
                                     </p>

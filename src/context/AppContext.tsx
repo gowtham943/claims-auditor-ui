@@ -27,6 +27,7 @@ function toIngestedPolicy(policy: PolicySummary): IngestedPolicy {
   return {
     id: policy.id,
     planName: policy.plan_name,
+    geography: policy.geography,
     planType: policy.plan_type,
     ingestedAt: '',
   }

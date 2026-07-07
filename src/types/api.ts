@@ -26,13 +26,13 @@ export interface ClaimIngestionResponse {
 export type ConnectionStatus = 'CONNECTING' | 'CONNECTED' | 'DISCONNECTED'
 
 export type PipelineStep =
-  | 'STAGED'
-  | 'PARSING_POLICY'
-  | 'VECTOR_INDEXING'
-  | 'SAVING_DATA'
-  | 'PARSING_CLAIM'
-  | 'COGNITIVE_AUDIT'
-  | 'COMPLETED'
+  | 'RECEIVED'
+  | 'READING_POLICY'
+  | 'ORGANIZING_POLICY'
+  | 'SAVING'
+  | 'READING_CLAIM'
+  | 'REVIEWING_CLAIM'
+  | 'COMPLETE'
   | 'FAILED'
 
 export interface ViolationDetail {
@@ -43,7 +43,7 @@ export interface ViolationDetail {
 }
 
 export interface AuditReport {
-  audit_status: 'APPROVED' | 'FLAGGED_ANOMALY' | 'DENIED'
+  audit_status: 'VALID' | 'NEEDS_REVIEW' | 'INVALID'
   total_billed_amount: number
   expected_patient_responsibility: number
   violations: ViolationDetail[]
@@ -87,6 +87,7 @@ export interface ClaimAuditDetail extends ClaimAuditSummary {
 export interface PolicySummary {
   id: string
   plan_name: string
+  geography: string
   plan_type: string
   source_url?: string | null
 }
@@ -94,6 +95,7 @@ export interface PolicySummary {
 export interface IngestedPolicy {
   id: string
   planName: string
+  geography: string
   planType: string
   ingestedAt: string
 }

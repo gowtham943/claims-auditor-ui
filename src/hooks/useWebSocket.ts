@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
+import { formatPipelineStep } from '../config/userLabels'
 import type {
   AuditReport,
   ConnectionStatus,
@@ -46,13 +47,13 @@ export function useWebSocket({
   const { token } = useAuth()
   const socketRef = useRef<WebSocket | null>(null)
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('DISCONNECTED')
-  const [currentStep, setCurrentStep] = useState<PipelineStep>('STAGED')
+  const [currentStep, setCurrentStep] = useState<PipelineStep>('RECEIVED')
   const [streamLogs, setStreamLogs] = useState<string[]>([])
   const [auditPayload, setAuditPayload] = useState<AuditReport | null>(null)
 
   const reset = useCallback(() => {
     setConnectionStatus('DISCONNECTED')
-    setCurrentStep('STAGED')
+    setCurrentStep('RECEIVED')
     setStreamLogs([])
     setAuditPayload(null)
   }, [])
@@ -71,7 +72,7 @@ export function useWebSocket({
 
     socket.onopen = () => {
       setConnectionStatus('CONNECTED')
-      setStreamLogs((prev) => [...prev, '[socket] Connected to ingestion pipeline'])
+      setStreamLogs((prev) => [...prev, 'Connected. You will see live progress here.'])
     }
 
     socket.onmessage = (event) => {
@@ -81,10 +82,10 @@ export function useWebSocket({
         setCurrentStep(step)
         setStreamLogs((prev) => [
           ...prev,
-          `[${step}] ${data.message}`,
+          `${formatPipelineStep(step)}: ${data.message}`,
         ])
 
-        if (step === 'COMPLETED') {
+        if (step === 'COMPLETE') {
           const parsed = parseAuditPayload(data.payload)
           if (parsed) {
             setAuditPayload(parsed)
@@ -92,21 +93,21 @@ export function useWebSocket({
         }
 
         if (step === 'FAILED') {
-          setStreamLogs((prev) => [...prev, '[FAILED] Pipeline terminated with errors'])
+          setStreamLogs((prev) => [...prev, 'This step could not be completed.'])
         }
       } catch {
-        setStreamLogs((prev) => [...prev, `[raw] ${String(event.data)}`])
+        setStreamLogs((prev) => [...prev, String(event.data)])
       }
     }
 
     socket.onerror = () => {
       setConnectionStatus('DISCONNECTED')
-      setStreamLogs((prev) => [...prev, '[socket] Transport error'])
+      setStreamLogs((prev) => [...prev, 'Connection problem. Please refresh and try again.'])
     }
 
     socket.onclose = () => {
       setConnectionStatus('DISCONNECTED')
-      setStreamLogs((prev) => [...prev, '[socket] Disconnected'])
+      setStreamLogs((prev) => [...prev, 'Updates ended.'])
     }
 
     return () => {

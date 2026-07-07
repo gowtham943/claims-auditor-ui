@@ -9,7 +9,7 @@ function AppShell() {
   if (isLoading) {
     return (
       <div className="dashboard-bg flex min-h-screen items-center justify-center text-slate-300">
-        Initializing secure session...
+        Initializing...
       </div>
     )
   }

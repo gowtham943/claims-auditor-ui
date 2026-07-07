@@ -13,15 +13,16 @@ import { ClaimsAuditDesk } from './ClaimsAuditDesk'
 import { AuditingConsole } from './AuditingConsole'
 import { RagChatAssistant } from './RagChatAssistant'
 import type { AuditReport } from '../types/api'
+import { TAB_LABELS } from '../config/userLabels'
 import { cn } from '../lib/cn'
 
 type DashboardTab = 'policy' | 'claims' | 'console' | 'chat'
 
 const tabs: { id: DashboardTab; label: string; icon: typeof Shield }[] = [
-  { id: 'policy', label: 'Policy Ingestion', icon: FileText },
-  { id: 'claims', label: 'Claims Audit Desk', icon: Scale },
-  { id: 'console', label: 'Auditing Console', icon: LayoutDashboard },
-  { id: 'chat', label: 'RAG Assistant', icon: MessageSquare },
+  { id: 'policy', label: TAB_LABELS.policy, icon: FileText },
+  { id: 'claims', label: TAB_LABELS.claims, icon: Scale },
+  { id: 'console', label: TAB_LABELS.console, icon: LayoutDashboard },
+  { id: 'chat', label: TAB_LABELS.chat, icon: MessageSquare },
 ]
 
 export function DashboardLayout() {
@@ -46,7 +47,7 @@ export function DashboardLayout() {
             </div>
             <div>
               <h1 className="text-lg font-semibold text-slate-100">ClaimsAuditor AI</h1>
-              <p className="text-xs text-slate-400">Real-time enterprise auditing dashboard</p>
+              <p className="text-xs text-slate-400">Check your health insurance claims online</p>
             </div>
           </div>
 

@@ -4,6 +4,7 @@ import { Bot, ChevronDown, ChevronUp, Send } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useAppContext } from '../context/AppContext'
 import { API_ENDPOINTS, apiUrl } from '../config/endpoints'
+import { formatPolicyLabel } from '../config/planTypes'
 import type { ChatQueryResponse } from '../types/api'
 import { cn } from '../lib/cn'
 
@@ -76,17 +77,18 @@ export function RagChatAssistant() {
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-700/80 px-4 py-3">
         <div className="flex items-center gap-2">
           <Bot className="h-5 w-5 text-emerald-400" />
-          <h2 className="text-sm font-medium text-slate-100">Policy RAG Chat Assistant</h2>
+          <h2 className="text-sm font-medium text-slate-100">Ask about your policy</h2>
         </div>
         <select
           value={activeSelectedPolicyId}
           onChange={(e) => setActiveSelectedPolicyId(e.target.value)}
           className="rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-1.5 text-sm text-slate-200"
         >
-          <option value="">Pin to policy...</option>
+          <option value="">Choose a policy...</option>
           {ingestedPolicies.map((policy) => (
             <option key={policy.id} value={policy.id}>
-              {policy.planName} — {policy.id.slice(0, 8)}...
+              {formatPolicyLabel(policy.planName, policy.geography, policy.planType)} —{' '}
+              {policy.id.slice(0, 8)}...
             </option>
           ))}
         </select>
@@ -159,8 +161,8 @@ export function RagChatAssistant() {
             onChange={(e) => setPrompt(e.target.value)}
             placeholder={
               activeSelectedPolicyId
-                ? 'Ask a policy verification question...'
-                : 'Select a policy ID before chatting'
+                ? 'Type your question about coverage, limits, or rules...'
+                : 'Choose a policy first'
             }
             disabled={!activeSelectedPolicyId || loading}
             className="flex-1 rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 disabled:opacity-50"
